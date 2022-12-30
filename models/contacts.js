@@ -4,6 +4,29 @@ const { nanoid } = require("nanoid");
 
 const contactsPath = path.join(__dirname, "./contacts.json")
 
+const { Schema, model } = require("mongoose");
+
+const contactSchema = new Schema({
+  name: {
+    type: String,
+    required: [true, 'Set name for contact'],
+  },
+  email: {
+    type: String,
+  },
+  phone: {
+    type: String,
+  },
+  favorite: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const Contact = model("contact", contactSchema);
+
+module.exports = Contact;
+
 const updateContacts = async (contacts) =>
   await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
 
