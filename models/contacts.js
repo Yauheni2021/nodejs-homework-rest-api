@@ -1,9 +1,9 @@
-const fs = require('fs/promises')
-const path = require("path");
-// const { nanoid } = require("nanoid");
-
-
 const { Schema, model } = require("mongoose");
+const { handleMongooseError } = require("../helpers");
+const Joi = require("joi");
+
+const emailRegex = /^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-z]+)$/;
+const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
 
 const contactSchema = new Schema({
   name: {
@@ -12,98 +12,36 @@ const contactSchema = new Schema({
   },
   email: {
     type: String,
+    unique: true,
+    mattch: emailRegex,
+    required: [true, 'Set email for contact'],
   },
   phone: {
     type: String,
+    mattch: phoneRegex,
   },
   favorite: {
     type: Boolean,
     default: false,
   },
+},
+{ versionKey: false, timestamps: true }
+);
+
+contactSchema.post('save', handleMongooseError);
+
+const joiSchema = Joi.object({
+  name: Joi.string().min(2).required(),
+  email: Joi.string().email().pattern(emailRegex).required(),
+  phone: Joi.string().pattern(phoneRegex).required(),
+  favorite: Joi.bool(),
+});
+
+const favoriteJoiSchema = Joi.object({
+  favorite: Joi.bool().required(),
 });
 
 const Contact = model("contact", contactSchema);
 
-module.exports = Contact;
+module.exports = {Contact, joiSchema, favoriteJoiSchema};
 
-// const updateContacts = async (contacts) =>
-//   await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-
-
-// const listContacts = async () => {
-//   try {
-//     const result = await fs.readFile(contactsPath, "utf-8");
-//     return JSON.parse(result)
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
-
-// const getContactById = async (contactId) => {
-//   try {
-//     const contacts = await listContacts();
-//     const result = await contacts.find(contact => contact.id === contactId);
-
-//     return result || null;
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// }
-
-// const removeContact = async (contactId) => {
-//   try {
-//     const contacts = await listContacts();
-//     const index = await contacts.findIndex(contact => contact.id === contactId);
-//     if (index === -1) {
-//       return null;
-//     };
-
-//     const [result] = contacts.splice(index, 1)
-//     await updateContacts(contacts);
-
-//     return result;
-
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// }
-
-// const addContact = async (body) => {
-//   try {
-//     const contacts = await listContacts();
-//     const newContact = {
-//       id: nanoid(),
-//       ...body
-//     };
-//     contacts.push(newContact)
-//     await updateContacts(contacts);
-
-
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// }
-
-// const updateContactById = async (contactId, body) => {
-//   try {
-//     const contacts = await listContacts();
-//     const index = contacts.findIndex(contact => contact.id === contactId)
-//     if (index === -1) {
-//       return null;
-//     };
-//     contacts[index] = {contactId, ...body}
-//     await updateContacts(contacts);
-
-//     return contacts[index];
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// }
-
-// module.exports = {
-//   listContacts,
-//   getContactById,
-//   removeContact,
-//   addContact,
-//   updateContactById,
-// }
