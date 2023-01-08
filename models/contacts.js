@@ -34,14 +34,19 @@ const joiSchema = Joi.object({
   name: Joi.string().min(2).required(),
   email: Joi.string().email().pattern(emailRegex).required(),
   phone: Joi.string().pattern(phoneRegex).required(),
-  favorite: Joi.bool(),
+  favorite: Joi.boolean(),
 });
 
 const favoriteJoiSchema = Joi.object({
-  favorite: Joi.bool().required(),
+  favorite: Joi.boolean().required(),
 });
+
+const schemas = {
+  joiSchema,
+  favoriteJoiSchema
+}
 
 const Contact = model("contact", contactSchema);
 
-module.exports = {Contact, joiSchema, favoriteJoiSchema};
+module.exports = {Contact, schemas};
 
