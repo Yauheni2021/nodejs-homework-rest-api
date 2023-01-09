@@ -1,15 +1,10 @@
 const express = require('express')
 const logger = require('morgan')
 const cors = require('cors')
-const mongoose = require('mongoose');
+
 const dotenv = require("dotenv");
 
 dotenv.config();
-
-
-mongoose.set("strictQuery", true)
-
-
 
 const contactsRouter = require('./routes/api/contacts')
 

@@ -28,7 +28,7 @@ const contactSchema = new Schema({
 { versionKey: false, timestamps: true }
 );
 
-contactSchema.post('save', handleMongooseError);
+contactSchema.post("save", handleMongooseError);
 
 const joiSchema = Joi.object({
   name: Joi.string().min(2).required(),
@@ -48,5 +48,8 @@ const schemas = {
 
 const Contact = model("contact", contactSchema);
 
-module.exports = {Contact, schemas};
+module.exports = {
+  Contact,
+  schemas
+};
 
